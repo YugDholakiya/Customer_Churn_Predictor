@@ -1,16 +1,13 @@
-
-# 📊 Customer Churn Prediction System
+# 📊 Customer Churn Predictor
 
 [![Python](https://img.shields.io/badge/Python-3.x-blue)](https://www.python.org/)
 [![Scikit-learn](https://img.shields.io/badge/ML-Scikit--Learn-orange)](https://scikit-learn.org/)
 [![Streamlit](https://img.shields.io/badge/App-Streamlit-red)](https://streamlit.io/)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![Live App](https://img.shields.io/badge/Live%20App-Streamlit-success?logo=streamlit)](https://customerchurnpredictor-7dzaawv2mb6p8uvarp3n9c.streamlit.app/)
 
-[![Live App](https://img.shields.io/badge/Live%20App-Streamlit-success?logo=streamlit)](https://customer-churn-prediction-system-by-rohit-raut.streamlit.app/)
+Built with **Python, Scikit-learn, Pandas, SHAP, Plotly, and Streamlit**, this project delivers an **end-to-end machine learning system:**
 
-Built with **Python, Scikit-learn, Pandas, SHAP, Plotly, and Streamlit**, this project demonstrates the **End-to-end machine learning pipeline:**
-
-**Raw Dataset → EDA → Data Cleaning → Feature Engineering → Train-Test Split → Model Training → Model Evaluation → Model Explainability → Model Deployment (Streamlit App).**
+**Raw Dataset → Data Cleaning → Feature Engineering → Train-Test Split → Model Training → Model Evaluation → Model Explainability → Model Deployment (Streamlit App).**
 
 ---
 
@@ -18,9 +15,9 @@ Built with **Python, Scikit-learn, Pandas, SHAP, Plotly, and Streamlit**, this p
 
 🔗 **Try the deployed application**
 
-https://customer-churn-prediction-system-by-rohit-raut.streamlit.app/
+https://customerchurnpredictor-7dzaawv2mb6p8uvarp3n9c.streamlit.app/
 
-This interactive dashboard allows users to input telecom customer details and instantly predict the **probability of churn** along with **model explanations**.
+This interactive dashboard allows users to input telecom customer attributes and instantly predict the **probability of churn** alongside **feature-level SHAP explanations**.
 
 ---
 
@@ -28,10 +25,11 @@ This interactive dashboard allows users to input telecom customer details and in
 
 - **Objective:** Predict whether a telecom customer is likely to churn.
 - **Dataset:** [IBM Telco Customer Churn Dataset (Kaggle)](https://www.kaggle.com/datasets/blastchar/telco-customer-churn)
-- **ML Pipeline:** EDA, Data cleaning, feature engineering, model training, evaluation, explainability
+- **ML Pipeline:** Data cleaning, feature engineering, model training, evaluation, explainability
 - **Deployment:** Interactive **Streamlit ML dashboard**.
-- **Best Model:** XGBoost
-- **Best ROC-AUC Score:** **0.848**
+- **Model:** XGBoost Classifier
+- **ROC-AUC Score:** **0.832**
+- **Accuracy:** **0.787**
 
 ---
 
@@ -51,8 +49,6 @@ Columns | **21**
 ---
 
 ## ⚙️ Machine Learning Pipeline
-
-This project follows a **complete ML workflow**.
 
 ```
             Raw Dataset
@@ -74,159 +70,81 @@ This project follows a **complete ML workflow**.
      Streamlit Web Application
 ```
 
-
 ---
 
 ## 🧹 Data Cleaning
 
 Key preprocessing steps performed:
 
-- Removed non-predictive identifier columns
+- Removed non-predictive identifier columns (`customerID`)
 - Standardized column names to **snake_case**
 - Converted categorical values to consistent formats
-- Fixed incorrect data types
+- Fixed incorrect data types (`total_charges` converted to numeric)
 - Converted target variable **churn → binary (0/1)**
 
 ---
 
 ## 🏗 Feature Engineering
 
-Additional features were created to improve model performance.
+Additional features were engineered to capture customer behavior:
 
 ### 1️⃣ Tenure Group
 
-Customers grouped into lifecycle stages.
-
-- ```0-12 months```
-- ```12-24 months```
-- ```24-48 months```
-- ```48+ months```
-
-
-Captures **customer lifecycle behaviour**.
-
----
+Customers grouped into lifecycle stages:
+- `0-12 months`
+- `12-24 months`
+- `24-48 months`
+- `48+ months`
 
 ### 2️⃣ Services Count
 
-Counts number of subscribed services.
-
-- ```services_count = sum(service features)```
-
-
-Higher engagement → **lower churn probability**.
-
----
+Counts number of subscribed optional services:
+- `services_count = sum(service features)`
+- Captures overall customer engagement level.
 
 ### 3️⃣ Average Monthly Spend
 
-- ```avg_monthly_spend = total_charges / tenure```
-
-
-Captures **spending behaviour patterns**.
+- `avg_monthly_spend = total_charges / tenure`
+- Discovers spending velocity and tenure anomalies.
 
 ---
 
 ## 🔢 Feature Encoding
 
 ### Binary Encoding
-
-- ```Yes → 1```
-- ```No → 0```
-
+- `Yes → 1`
+- `No → 0`
 
 Applied to:
-
-- partner
-- dependents
-- phone_service
-- online_security
-- online_backup
-- device_protection
-- tech_support
-- streaming_tv
-- streaming_movies
-- multiple_lines
-- paperless_billing
-
----
+- partner, dependents, phone_service, online_security, online_backup, device_protection, tech_support, streaming_tv, streaming_movies, multiple_lines, paperless_billing
 
 ### One-Hot Encoding
-
 Applied to multi-category features:
-
-- internet_service
-- contract
-- payment_method
-- tenure_group
+- `internet_service`, `contract`, `payment_method`, `tenure_group`
 
 ---
 
-## 🤖 Model Training
-
-Multiple machine learning models were trained.
-
-| Model | Type |
-|------|------|
-| Logistic Regression | Linear Model |
-| Decision Tree | Tree-Based Model |
-| Random Forest | Ensemble Learning |
-| Gradient Boosting | Boosting Model |
-| XGBoost | Advanced Boosting Model |
-
----
-
-### Model Performance
-
-All trained machine learning models were Evaluated.
-
-| Model | Accuracy | Precision | Recall | F1 Score | ROC-AUC |
-|------|------|------|------|------|------|
-| Logistic Regression | 0.805 | 0.675 | 0.509 | 0.581 | 0.847 |
-| Random Forest | 0.797 | 0.649 | 0.509 | 0.571 | 0.842 |
-| Gradient Boosting | 0.807 | 0.681 | 0.512 | 0.585 | 0.842 |
-| XGBoost | **0.769** | 0.545 | 0.774 | 0.639 | **0.848** |
-| Decision Tree | 0.753 | 0.523 | 0.774 | 0.624 | 0.835 |
-
-
-
-
----
-
-## 🏆 Best Model
+## 🏆 Production Model Performance
 
 **XGBoost Classifier**
 
-Performance:
-
 | Metric | Score |
 |------|------|
-Accuracy | **0.769**
-Precision | **0.545**
-Recall | **0.774**
-F1-Score | **0.639**
-ROC-AUC | **0.848**
-
-XGBoost achieved the best balance between **accuracy and generalization**.
+Accuracy | **0.787**
+ROC-AUC | **0.832**
 
 ---
 
 ## 🔍 Model Explainability
 
-The project includes **model explainability using SHAP**.
+SHAP (SHapley Additive exPlanations) values provide local and global explainability for each customer prediction.
 
-This helps understand **why the model predicts churn**.
-
-Features influencing predictions include:
-
-- Contract type
-- Tenure
-- Internet service type
+Key influencing features:
+- Contract type (Month-to-month vs. Annual)
+- Tenure length
+- Internet service type (Fiber optic vs. DSL)
 - Monthly charges
-- Technical support
-- Service subscriptions
-
-The deployed dashboard displays **feature importance for each prediction**.
+- Technical support availability
 
 ---
 
@@ -236,25 +154,12 @@ The trained ML model is deployed as an **interactive web application** using Str
 
 ### Dashboard Features
 
-- Interactive **customer input form**
-- **Churn probability gauge**
+- Interactive **customer attribute inputs**
+- Real-time **churn probability gauge**
 - **Risk classification (Low / Medium / High)**
-- **SHAP-based prediction explanation**
-- Clean and responsive **ML dashboard UI**
-
----
-
-## 📸 Application Screenshots
-
-### High Risk Prediction
-
-![High Risk Prediction](reports/figures/high_risk_prediction.png)
-
----
-
-### Low Risk Prediction
-
-![Low Risk Prediction](reports/figures/low_risk_prediction.png)
+- **SHAP-based prediction explanation chart**
+- **Tailored customer retention recommendations**
+- Clean and responsive **UI layout**
 
 ---
 
@@ -271,115 +176,39 @@ The trained ML model is deployed as an **interactive web application** using Str
 ## 🗂 Project Structure
 
 ```bash
-
-customer_churn_prediction_system
-│
-├── .venv/
+customer-churn-prediction-system
 │
 ├── data/
 │   ├── raw_data/
-│   │   	└── raw_telco_churn_data.csv
-│   │
-│   ├── transformed_data/
-│   │   	├── cleaned_data.csv
-│   │   	└── transformed_data.csv
-│   │
-│   └── model_input/
-│       	├── x_train.csv
-│       	├── x_test.csv
-│       	├── y_train.csv
-│       	└── y_test.csv
+│   │   └── raw_telco_churn_data.csv
+│   └── transformed_data/
 │
-├──  notebooks/
-│       	├── 01_initial_eda_before_data_cleaning.ipynb
-│       	├── 02_eda_after_data_cleaning.ipynb
-│       	└── 03_eda_after_feature_engineering.ipynb
+├── saved_models/
+│   ├── best_churn_prediction_model.pkl
+│   └── training_columns.pkl
 │
-├──  saved_models/
-│   		├── 01_logistic_regression_model.pkl
-│   		├── 02_decision_tree_model.pkl
-│       	├── 03_random_forest_model.pkl
-│       	├── 04_gradient_boosting_model.pkl
-│       	├── 05_xgboost_model.pkl
-│       	└── best_churn_prediction_model.pkl
+├── src/
+│   └── train_model.py
 │
-├───  src/
-│   		├── data_cleaning.py
-│   		├── feature_engineering.py
-│   		├── train_test_split.py
-│       	│
-│   		├──  models_training/
-│   		│		├── __init__.py
-│   		│		├── logistic_regression_model.py
-│   		│		├── decision_tree_model.py
-│   		│		├── random_forest_model.py
-│   		│		├── gradient_boosting_model.py
-│   		│		└── xgboost_model.py
-│		    │
-│   		├── models_evaluation/
-│   		│		└── evaluate_models.py
-│       	│
-│           └── train_models.py
+├── reports/
+│   └── figures/
 │
-├──  reports/
-│   		├── figures/
-│   		└── model_comparison.csv
-│
-│
-├──  streamlit/
-│   		├── app.py
-│   		├── components/
-│   		│		└── prediction_ui.py
-│   		│
-│   		├── saved_models/
-│       	│		├── best_churn_prediction_model.pkl
-│       	│		└── training_columns.pkl
-│           │
-│   		└── utils/
-│       			├── model_loader.py
-│       			├── preprocessing.py
-│       			└── prediction.py
-│
-├── .gitignore
-│
-├── LICENSE
+├── streamlit/
+│   ├── app.py
+│   ├── components/
+│   │   └── prediction_ui.py
+│   ├── saved_models/
+│   │   ├── best_churn_prediction_model.pkl
+│   │   └── training_columns.pkl
+│   └── utils/
+│       ├── model_loader.py
+│       ├── preprocessing.py
+│       └── prediction.py
 │
 ├── requirements.txt
-│
 ├── requirements-dev.txt
-│
 └── README.md
-
 ```
-
-
----
-
-## 🛠 Tech Stack
-
-**Programming**
-
-- Python
-
-**Data Processing**
-
-- Pandas
-- NumPy
-
-**Machine Learning**
-
-- Scikit-learn
-- XGBoost
-
-**Visualization**
-
-- Plotly
-- Matplotlib
-- SHAP
-
-**Web Application**
-
-- Streamlit
 
 ---
 
@@ -388,7 +217,7 @@ customer_churn_prediction_system
 Clone repository:
 
 ```bash
-git clone https://github.com/rohit-1024/customer-churn-prediction-system.git
+git clone <your-repository-url>
 ```
 
 Navigate to project directory:
@@ -401,12 +230,6 @@ Create Python Virtual Environment:
 
 ```bash
 python -m venv .venv
-```
-
-Upgrade pip:
-
-```bash
-python -m pip install --upgrade pip
 ```
 
 Install dependencies:
@@ -425,33 +248,11 @@ streamlit run streamlit/app.py
 
 ## ☁ Deployment
 
-The application is deployed on **Streamlit Community Cloud**.
+The application is deployed on **Streamlit Community Cloud**:
 
-### Deployment Steps
-
-1. Push the project to GitHub
+1. Push your project to your GitHub repository
 2. Connect the repository to **Streamlit Community Cloud**
-3. Set the app entry point as:
-
+3. Set the app entry point to:
 ```bash
 streamlit/app.py
 ```
----
-
-## 🤝 Contribution
-Contributions are welcome!
-Feel free to fork this repo and submit pull requests.
-
----
-
-## 📜 License
-This project is licensed under the **MIT License**.
-
----
-
-## 👨‍💻 Author
-- **Rohit Raut**
-- 📧 [rohit.it4368@gmail.com](mailto:rohit.it4368@gmail.com)
-- 🔗 [LinkedIn](https://www.linkedin.com/in/rohitraut1024/)
-
----
