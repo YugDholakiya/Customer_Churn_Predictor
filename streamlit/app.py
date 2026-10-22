@@ -59,11 +59,19 @@ if run_prediction:
     metric_col1, metric_col2, metric_col3, metric_col4 = st.columns(4)
 
     with metric_col1:
+        outcome_val = "Likely to Churn" if prediction == 1 else "Likely to Stay"
+        if risk_level == "High Risk":
+            delta_color = "inverse"
+        elif risk_level == "Medium Risk":
+            delta_color = "off"
+        else:
+            delta_color = "normal"
+
         st.metric(
             label="Prediction Outcome",
-            value="Likely to Churn" if prediction == 1 else "Likely to Stay",
-            delta="High Risk" if prediction == 1 else "Retained",
-            delta_color="inverse" if prediction == 1 else "normal"
+            value=outcome_val,
+            delta=risk_level,
+            delta_color=delta_color
         )
 
     with metric_col2:
@@ -126,12 +134,16 @@ if run_prediction:
     try:
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(processed_df)
-        shap_arr = np.array(shap_values)
 
-        if shap_arr.ndim == 3:
-            shap_arr = shap_arr[:, :, 1]
-        elif isinstance(shap_values, list):
+        if isinstance(shap_values, list):
             shap_arr = shap_values[1]
+        elif hasattr(shap_values, "values"):
+            vals = shap_values.values
+            shap_arr = vals[:, :, 1] if vals.ndim == 3 else vals
+        else:
+            shap_arr = np.array(shap_values)
+            if shap_arr.ndim == 3:
+                shap_arr = shap_arr[:, :, 1]
 
         shap_df = pd.DataFrame(shap_arr, columns=processed_df.columns)
         top_features = shap_df.abs().T.sort_values(by=0, ascending=False).head(10)

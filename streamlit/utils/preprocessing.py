@@ -25,10 +25,13 @@ def preprocess_input(user_input: dict, training_columns: list) -> pd.DataFrame:
     ]
     for field in binary_fields:
         if field in df.columns:
-            df[field] = (df[field].astype(str).str.lower() == "yes").astype(int)
+            df[field] = (df[field].astype(str).str.strip().str.lower() == "yes").astype(int)
 
     if "gender" in df.columns:
         df["gender"] = (df["gender"].astype(str).str.lower() == "male").astype(int)
+
+    if "senior_citizen" in df.columns:
+        df["senior_citizen"] = df["senior_citizen"].astype(int)
 
     # Derived lifecycle and engagement features
     tenure_val = int(df["tenure"].iloc[0])
@@ -50,3 +53,4 @@ def preprocess_input(user_input: dict, training_columns: list) -> pd.DataFrame:
     # Align exactly with the model's training columns
     df = df.reindex(columns=training_columns, fill_value=0)
     return df
+

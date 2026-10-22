@@ -27,9 +27,9 @@ This interactive dashboard allows users to input telecom customer attributes and
 - **Dataset:** [IBM Telco Customer Churn Dataset (Kaggle)](https://www.kaggle.com/datasets/blastchar/telco-customer-churn)
 - **ML Pipeline:** Data cleaning, feature engineering, model training, evaluation, explainability
 - **Deployment:** Interactive **Streamlit ML dashboard**.
-- **Model:** XGBoost Classifier
-- **ROC-AUC Score:** **0.832**
-- **Accuracy:** **0.787**
+- **Model:** Random Forest Classifier
+- **ROC-AUC Score:** **0.838**
+- **Accuracy:** **0.791**
 
 ---
 
@@ -126,12 +126,12 @@ Applied to multi-category features:
 
 ## 🏆 Production Model Performance
 
-**XGBoost Classifier**
+**Random Forest Classifier**
 
 | Metric | Score |
 |------|------|
-Accuracy | **0.787**
-ROC-AUC | **0.832**
+Accuracy | **0.791**
+ROC-AUC | **0.838**
 
 ---
 

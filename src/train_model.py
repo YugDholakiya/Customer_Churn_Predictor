@@ -2,7 +2,7 @@
 Customer Churn Prediction - End-to-End Model Training Pipeline
 Author: Customer Churn Predictor Team
 License: MIT
-Description: Trains, evaluates, and exports a production-ready churn prediction model.
+Description: Trains, evaluates, and exports a production-ready churn prediction model using Random Forest.
 """
 
 from pathlib import Path
@@ -11,7 +11,7 @@ import pandas as pd
 import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, roc_auc_score, accuracy_score
-from xgboost import XGBClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 
 def load_and_clean_data(csv_path: Path) -> pd.DataFrame:
@@ -33,7 +33,7 @@ def load_and_clean_data(csv_path: Path) -> pd.DataFrame:
 
 
 def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Transforms raw features into machine learning features."""
+    """Transforms raw features into machine learning features with standardized snake_case."""
     data = df.copy()
 
     # Target variable mapping
@@ -41,19 +41,27 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
         data["churn"] = (data["Churn"].str.strip().str.lower() == "yes").astype(int)
         data = data.drop(columns=["Churn"])
 
-    # Binary mappings
-    binary_cols = [
-        "Partner", "Dependents", "PhoneService", "PaperlessBilling",
-        "OnlineSecurity", "OnlineBackup", "DeviceProtection",
-        "TechSupport", "StreamingTV", "StreamingMovies", "MultipleLines"
-    ]
-    for col in binary_cols:
-        if col in data.columns:
-            data[col.lower()] = data[col].apply(lambda v: 1 if str(v).lower() == "yes" else 0)
-            data = data.drop(columns=[col])
+    # Standardized binary feature mappings
+    binary_map = {
+        "Partner": "partner",
+        "Dependents": "dependents",
+        "PhoneService": "phone_service",
+        "PaperlessBilling": "paperless_billing",
+        "OnlineSecurity": "online_security",
+        "OnlineBackup": "online_backup",
+        "DeviceProtection": "device_protection",
+        "TechSupport": "tech_support",
+        "StreamingTV": "streaming_tv",
+        "StreamingMovies": "streaming_movies",
+        "MultipleLines": "multiple_lines"
+    }
+    for old_col, new_col in binary_map.items():
+        if old_col in data.columns:
+            data[new_col] = data[old_col].apply(lambda v: 1 if str(v).strip().lower() == "yes" else 0)
+            data = data.drop(columns=[old_col])
 
     if "gender" in data.columns:
-        data["gender"] = (data["gender"].str.lower() == "male").astype(int)
+        data["gender"] = (data["gender"].astype(str).str.lower() == "male").astype(int)
 
     if "SeniorCitizen" in data.columns:
         data["senior_citizen"] = data["SeniorCitizen"].astype(int)
@@ -61,15 +69,17 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
 
     if "tenure" in data.columns:
         data["tenure"] = data["tenure"].astype(int)
-        # Tenure group cohort
         data["tenure_group"] = pd.cut(
             data["tenure"],
             bins=[-1, 12, 24, 48, 100],
             labels=["0-12_months", "12-24_months", "24-48_months", "48+_months"]
         )
 
-    # Derive engagement count
-    services = ["online_security", "online_backup", "device_protection", "tech_support", "streaming_tv", "streaming_movies"]
+    # Derive engagement count across optional value-add services
+    services = [
+        "online_security", "online_backup", "device_protection",
+        "tech_support", "streaming_tv", "streaming_movies"
+    ]
     existing_services = [s for s in services if s in data.columns]
     data["services_count"] = data[existing_services].sum(axis=1)
 
@@ -109,15 +119,20 @@ def run_pipeline():
     raw_path = base_dir / "data" / "raw_data" / "raw_telco_churn_data.csv"
     output_dir = base_dir / "saved_models"
     streamlit_models_dir = base_dir / "streamlit" / "saved_models"
+    model_input_dir = base_dir / "data" / "model_input"
+    transformed_dir = base_dir / "data" / "transformed_data"
 
-    output_dir.mkdir(parents=True, exist_ok=True)
-    streamlit_models_dir.mkdir(parents=True, exist_ok=True)
+    for d in [output_dir, streamlit_models_dir, model_input_dir, transformed_dir]:
+        d.mkdir(parents=True, exist_ok=True)
 
     print("Step 1: Loading raw dataset...")
     raw_df = load_and_clean_data(raw_path)
 
     print("Step 2: Engineering features...")
     processed_df = engineer_features(raw_df)
+
+    # Save cleaned / transformed data
+    processed_df.to_csv(transformed_dir / "transformed_data.csv", index=False)
 
     y = processed_df["churn"]
     X = processed_df.drop(columns=["churn"])
@@ -128,15 +143,19 @@ def run_pipeline():
         X, y, test_size=0.20, random_state=42, stratify=y
     )
 
-    print("Step 4: Training XGBoost Classifier...")
-    model = XGBClassifier(
-        n_estimators=150,
-        max_depth=4,
-        learning_rate=0.08,
-        subsample=0.8,
-        colsample_bytree=0.8,
-        random_state=42,
-        eval_metric="logloss"
+    # Save model input splits
+    X_train.to_csv(model_input_dir / "x_train.csv", index=False)
+    X_test.to_csv(model_input_dir / "x_test.csv", index=False)
+    y_train.to_csv(model_input_dir / "y_train.csv", index=False)
+    y_test.to_csv(model_input_dir / "y_test.csv", index=False)
+
+    print("Step 4: Training Random Forest Classifier...")
+    model = RandomForestClassifier(
+        n_estimators=200,
+        max_depth=7,
+        min_samples_split=8,
+        min_samples_leaf=4,
+        random_state=42
     )
     model.fit(X_train, y_train)
 
@@ -160,3 +179,4 @@ def run_pipeline():
 
 if __name__ == "__main__":
     run_pipeline()
+

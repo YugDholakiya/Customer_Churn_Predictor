@@ -14,4 +14,11 @@ __pycache__/
 # VS Code
 .vscode/
 
+# Presentation and PPT files (local only)
+*.pptx
+generate_pptx.py
+presentation.html
+presentation/
+bvm_logo.png
+
 # Project Completed
